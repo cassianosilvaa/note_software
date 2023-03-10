@@ -64,30 +64,4 @@ export class UserController {
             return ServerError.genericError(res, error);
         }
     }
-
-    public delete(req: Request, res: Response) {
-        try {
-            const { id } = req.params;
-
-            const database = new UserDatabase();
-            const userIndex = database.getIndex(id);
-
-            if (userIndex < 0) {
-                return res.status(404).send({
-                    ok: false,
-                    message: "User not found",
-                });
-            }
-
-            database.delete(userIndex);
-
-            return SuccessResponse.ok(
-                res,
-                "User was successfully deleted",
-                userIndex
-            );
-        } catch (error: any) {
-            return ServerError.genericError(res, error);
-        }
-    }
 }

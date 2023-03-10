@@ -16,6 +16,13 @@ export class Note {
     public get id() {
         return this._id;
     }
+    public set description(description: string) {
+        this._description = description;
+    }
+
+    public set detail(detail: string) {
+        this._detail = detail;
+    }
 
     public toJson() {
         return {

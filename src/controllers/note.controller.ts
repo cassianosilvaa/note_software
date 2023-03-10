@@ -47,24 +47,64 @@ export class NoteController {
 
     public delete(req: Request, res: Response) {
         try {
-            const { id } = req.params;
+            const { id, noteId } = req.params;
 
             const database = new UserDatabase();
-            const userIndex = database.getIndex(id);
+            const user = database.get(id);
 
-            if (userIndex < 0) {
+            const userNote = user!.notes;
+
+            console.log(userNote);
+
+            const userNoteIndex = userNote.findIndex(
+                (item) => item.id === noteId
+            );
+
+            console.log(userNoteIndex);
+
+            if (userNoteIndex < 0) {
                 return res.status(404).send({
                     ok: false,
-                    message: "User not found",
+                    message: "Note not found",
                 });
             }
 
-            database.delete(userIndex);
+            const deletedNote = userNote.splice(userNoteIndex, 1);
 
             return SuccessResponse.ok(
                 res,
-                "User was successfully deleted",
-                userIndex
+                "Note was successfully deleted",
+                deletedNote
+            );
+        } catch (error: any) {
+            return ServerError.genericError(res, error);
+        }
+    }
+
+    public update(req: Request, res: Response) {
+        try {
+            const { newDescription, newDetail } = req.body;
+
+            const { id, noteId } = req.params;
+
+            const database = new UserDatabase();
+            const user = database.get(id);
+
+            const noteIndexFind = user!.notes.findIndex(
+                (note) => note.id === noteId
+            );
+
+            if (newDescription) {
+                user!.notes[noteIndexFind].description = newDescription;
+            }
+
+            if (newDetail) {
+                user!.notes[noteIndexFind].detail = newDetail;
+            }
+            return SuccessResponse.ok(
+                res,
+                "Notes was successfully Edited",
+                user!.notes[noteIndexFind]
             );
         } catch (error: any) {
             return ServerError.genericError(res, error);
